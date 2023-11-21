@@ -27,6 +27,7 @@ git clone https://github.com/Coinbuck/Contracts.git
 git checkout development
 # install deps
 npm install
+```
 
 
 <br />
