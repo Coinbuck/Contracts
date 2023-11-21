@@ -20,6 +20,7 @@ Ganache: Use Ganache for local development and testing.
 
 
 ## Installation
+```shell
 #Clone the repository
 git clone https://github.com/Coinbuck/Contracts.git
 #Latest branch
