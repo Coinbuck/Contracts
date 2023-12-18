@@ -61,19 +61,7 @@ contract('buckToken', function ([ owner, beneficiary, account1, account2, accoun
     it('does not allow transferring ownership to the zero address', async function () {
       await expectRevert(this.buck.transferOwnership(ZERO_ADDRESS),'Ownable: new owner is the zero address');
     });
-
-    it('does not allow the pending owner to update the owner if not accepted', async function () {
-      await expectRevert(this.buck.updateOwner({ from: account2 }),'Not pendind owner');
-    });
   
-    it('allows the owner to transfer ownership', async function () {
-      await this.buck.transferOwnership(account2, { from: owner });
-      const pendingOwner = await this.buck.pendingOwner();
-      expect(pendingOwner).to.equal(account2);
-      await this.buck.updateOwner({ from: account2 });
-      const contractOwner = await this.buck.owner();
-      expect(contractOwner).to.equal(account2);
-    });
 
     it('should prevent setting zero address as new owner during transfer', async function() {
       await expectRevert(this.buck.transferOwnership(ZERO_ADDRESS, { from: owner }), 'Ownable: new owner is the zero address');

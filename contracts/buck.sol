@@ -2,17 +2,15 @@
 
 pragma solidity 0.8.0;
 
-import "./token/IERC20Metadata.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-import "./token/IERC20.sol";   
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import "./utils/Context.sol"; 
-
-import "./access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 
 
-contract buckToken is Context, IERC20, IERC20Metadata , Ownable{
+contract buckToken is  IERC20, IERC20Metadata , Ownable{
 
     mapping(address => uint256) private _balances;
     mapping(address => bool) public blacklisted;

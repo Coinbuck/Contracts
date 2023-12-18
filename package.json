@@ -12,6 +12,7 @@
   },
   "author": "",
   "dependencies": {
+    "@openzeppelin/contracts": "^4.9.5",
     "@truffle/hdwallet-provider": "^1.2.2",
     "truffle": "^5.1.60",
     "truffle-contract-size": "^2.0.1",
