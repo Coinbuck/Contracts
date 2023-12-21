@@ -384,6 +384,55 @@ contract('buckToken', function ([ owner, beneficiary, account1, account2, accoun
         expect(finalBalance.toString()).to.equal(initialBalance.sub(burnAmount).toString());
     });
 
+    it('should revert transferFrom if insufficient allowance', async function () {
+      
+      // Set an initial allowance (less than the amount that will be spent)
+      const initialAllowance = new BN(100);
+      await this.buck.approve(account2, initialAllowance, { from: owner });
+
+      // Attempt a transferFrom with an amount greater than the allowance
+      const amountToTransfer = new BN(150); // This amount exceeds the initial allowance
+      await expectRevert(this.buck.transferFrom(owner, account3,amountToTransfer, { from: account2 }), 'ERC20: insufficient allowance');
+  });
+
+  it('should not decrease allowance if current allowance is uint256 max in transferFrom', async function () {
+      // Set an initial allowance equal to uint256 max
+    const maxAllowance = "115792089237316195423570985008687907853269984665640564039457584007913129639935"; // uint256 max
+    await this.buck.approve(account2, maxAllowance, { from: owner });
+    // Call transferFrom to spend an amount (should not change allowance)
+    const amountToTransfer = new BN(50);
+    await this.buck.transferFrom(owner, account3, amountToTransfer, { from: account2 });
+  });
+
+  it('should revert when decreasing allowance below zero', async function () {
+      // Set an initial allowance
+      const initialAllowance = new BN(100); // Set allowance
+      await this.buck.approve(account2, initialAllowance, { from: owner });
+      // Try to decrease the allowance by an amount greater than the current allowance
+      const subtractedValue = new BN(150); // This value exceeds the initial allowance
+      await expectRevert(this.buck.decreaseAllowance(account2, subtractedValue, { from: owner }), 'ERC20: decreased allowance below zero');
+  });
+
+  it('spender cannot be zero address', async function () {
+      const amount = new BN(100); // Set the amount to transfer
+      await expectRevert(this.buck.approve(ZERO_ADDRESS,amount,{from: owner }), 'ERC20: approve to the zero address');
+  });
+
+  it('throws an error when attempting to enable blacklisting again', async function () {      
+    // Try to enable again when already enabled
+    await expectRevert(this.buck.enableBlacklisting({ from: owner }),'blacklisting already enabled');  
+  });
+  it('throws an error when attempting to disable blacklisting again', async function () {      
+    // Try to diable again when already diabled
+    await this.buck.disableBlacklisting({ from: owner });
+    await expectRevert(this.buck.disableBlacklisting({ from: owner }),'blacklisting already disabled');  
+  });
+
+
+  it('correctly handles enabling blacklisting when not already enabled', async function () {
+     await this.buck.disableBlacklisting({ from: owner });
+     await this.buck.enableBlacklisting({ from: owner });          
+   });
 
 
   it('prevents burning tokens more than the balance', async function () {
@@ -391,6 +440,7 @@ contract('buckToken', function ([ owner, beneficiary, account1, account2, accoun
     const burnAmount = initialSupply.add(new BN(10)); // Exceeding the total supply
     // Attempt to burn tokens more than the total supply
     await expectRevert(this.buck.burn(burnAmount),'ERC20: burn amount exceeds balance')
-  });    
-    });
+  });
+
+  });
 });
